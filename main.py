@@ -79,7 +79,7 @@ else:
             if i == data_length:
                 break
         if available_slots == 0:
-            print("***** No Slots found to Book *****")
+            print("***** No slots found to Book *****")
         countdown(int(timeinterval_Sec))
         print("\n")
         pass
