@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 
 import json
 import requests
@@ -10,18 +11,28 @@ age_limit = input("Age : ")
 timeinterval = int(input("Duration to refresh slots availability result (in minutes) : ")) # in minutes
 timeinterval_Sec = timeinterval * 60
 
+# define the countdown func.
+def countdown(t):
+    while t:
+        mins, secs = divmod(t, 60)
+        timer = '{:02d}:{:02d}'.format(mins, secs)
+        print("Will Search for slots again after : " + timer, end="\r")
+        time.sleep(1)
+        t -= 1
+
 if 45 > int(age_limit) >= 18:
     age_limit = 18
+
 elif int(age_limit) >= 45:
     age_limit = 45
 
-
 if int(age_limit) < 18:
     print("Vaccination not open for age lesser than 18")
-    exit
+    exit()
+
 else:
     while True:
-
+        available_slots = 0
         today = date.today().strftime("%d-%m-%Y")
         url = 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=' + pincode + '&date=' + today
         headers = {
@@ -29,7 +40,12 @@ else:
                           'Chrome/90.0.4430.93 Safari/537.36'}
         r = requests.get(url, headers=headers)
         data = r.content
-        data_dict = json.loads(data.decode('utf-8'))
+        data_dict = {}
+        try:
+            data_dict = json.loads(data.decode("utf-8"))
+        except json.decoder.JSONDecodeError:
+            time.sleep(15)
+
         data = data_dict['centers']
         data_length = len(data)
 
@@ -55,12 +71,15 @@ else:
                     print("**********************************************")
                     print("\n")
                     playsound('alertFile/alert.wav')
+                    available_slots +=1
                 j += 1
                 if j >= len(data_df['sessions']):
                     break
             i += 1
             if i == data_length:
                 break
-        print("Will Search for slots again after " + str(timeinterval) + " Minute(s)")
-        time.sleep(timeinterval_Sec)
+        if available_slots == 0:
+            print("***** No Slots found to Book *****")
+        countdown(int(timeinterval_Sec))
+        print("\n")
         pass
