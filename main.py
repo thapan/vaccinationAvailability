@@ -29,7 +29,7 @@ else:
                           'Chrome/90.0.4430.93 Safari/537.36'}
         r = requests.get(url, headers=headers)
         data = r.content
-        data_dict = json.loads(data)
+        data_dict = json.loads(data.decode('utf-8'))
         data = data_dict['centers']
         data_length = len(data)
 
