@@ -41,10 +41,12 @@ else:
         r = requests.get(url, headers=headers)
         data = r.content
         data_dict = {}
-        try:
-            data_dict = json.loads(data.decode("utf-8"))
-        except json.decoder.JSONDecodeError:
-            time.sleep(15)
+        while True:
+            try:
+                data_dict = json.loads(data.decode("utf-8"))
+                break
+            except json.decoder.JSONDecodeError:
+                time.sleep(15)
 
         data = data_dict['centers']
         data_length = len(data)
